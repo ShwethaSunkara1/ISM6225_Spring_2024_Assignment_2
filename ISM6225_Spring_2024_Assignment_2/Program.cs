@@ -48,13 +48,13 @@ namespace ISM6225_Spring_2024_Assignment_2
 
             //Question 6:
             Console.WriteLine("Question 6:");
-            int[] nums5 = { 3,6,9,1 };
+            int[] nums5 = { 3, 6, 9, 1 };
             int maxGap = MaximumGap(nums5);
             Console.WriteLine(maxGap);
 
             //Question 7:
             Console.WriteLine("Question 7:");
-            int[] nums6 = { 2,1,2 };
+            int[] nums6 = { 2, 1, 2 };
             int largestPerimeterResult = LargestPerimeter(nums6);
             Console.WriteLine(largestPerimeterResult);
 
@@ -100,7 +100,13 @@ namespace ISM6225_Spring_2024_Assignment_2
             try
             {
                 // Write your code here and you can modify the return value according to the requirements
-                return 0;
+                if (nums.Length == 0) // if the number of elements in the array is 0, then it returns the length 0
+                {
+                    return 0;
+                }
+                IEnumerable<int> uniqueItems = nums.Distinct<int>(); // Distinct() removes the duplicate elements 
+                int n = uniqueItems.Count(); // Here number of elements in the array is assigned to n
+                return n;
             }
             catch (Exception)
             {
@@ -108,7 +114,12 @@ namespace ISM6225_Spring_2024_Assignment_2
             }
         }
 
-        /*
+        /* Self Reflection:
+         This C# code counts unique elements in an array `nums` by first checking if the array is empty, returning 0. 
+         It then uses `Distinct()` method to remove duplicates, creating a collection of unique elements.
+         The final count of these unique elements is calculated with `Count()` and returned.
+         The time complexity of this code results in a linear time complexity, O(n), 
+         where n is the number of elements in the original array. 
         
         Question 2:
         Given an integer array nums, move all 0's to the end of it while maintaining the relative order of the non-zero elements.
@@ -135,7 +146,22 @@ namespace ISM6225_Spring_2024_Assignment_2
             try
             {
                 // Write your code here and you can modify the return value according to the requirements
-                return new List<int>();
+                int nzIndex = 0; // Initialize an index to track non-zero elements
+
+                // Traverse the array
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    if (nums[i] != 0) // If the current element is non-zero
+                    {
+                        // Swap the current non-zero element with the element at nzIndex
+                        int temp = nums[nzIndex];
+                        nums[nzIndex] = nums[i];
+                        nums[i] = temp;
+
+                        nzIndex++; // Increment nonZeroIndex to the next position
+                    }
+                }
+                return nums;
             }
             catch (Exception)
             {
@@ -143,6 +169,11 @@ namespace ISM6225_Spring_2024_Assignment_2
             }
         }
 
+        /* Self Reflection:
+         * This C# code counts unique elements in an array `nums` by first checking if the array is empty, returning 0. It then uses `Distinct()` method to remove duplicates, creating a collection of unique elements. The final count of these unique elements is calculated with `Count()` and returned.
+         Time Complexity: The time complexity of this algorithm is O(n), where n is the number of elements in the array. This is because the algorithm makes a single pass through the array, processing each element exactly once to determine whether it is zero and potentially perform a swap operation.
+         Space Complexity: The space complexity is O(1), as the rearrangement of zeros is done in-place with a constant amount of extra space. The only additional memory used is for a few variables (like `nzIndex` and `temp` for swapping), which does not scale with the size of the input array.
+ */
         /*
 
         Question 3:
@@ -186,14 +217,56 @@ namespace ISM6225_Spring_2024_Assignment_2
             try
             {
                 // Write your code here and you can modify the return value according to the requirements
-                return new List<IList<int>>();
+                IList<IList<int>> result = new List<IList<int>>(); // Initialize the result list to store triplets
+
+                Array.Sort(nums); // Sorting the array 
+
+                for (int i = 0; i < nums.Length - 2; i++) // Iterate through the array, leave space for two other pointers
+                {
+                    if (i == 0 || (i > 0 && nums[i] != nums[i - 1])) // Skip duplicates
+                    {
+                        int left = i + 1; // Pointer to the element next to nums[i]
+                        int right = nums.Length - 1; // Pointer to the end of the array
+
+                        while (left < right) // Two-pointer approach
+                        {
+                            int sum = nums[i] + nums[left] + nums[right]; // Calculate the sum of the triplet
+
+                            if (sum == 0)
+                            {
+                                // Found a triplet, add it to the result list
+                                result.Add(new List<int> { nums[i], nums[left], nums[right] });
+
+                                // Skip duplicates
+                                while (left < right && nums[left] == nums[left + 1])
+                                    left++;
+                                while (left < right && nums[right] == nums[right - 1])
+                                    right--;
+
+                                // Move pointers
+                                left++;
+                                right--;
+                            }
+                            else if (sum < 0) // If sum is less than zero, move left pointer to the right
+                                left++;
+                            else // If sum is greater than zero, move right pointer to the left
+                                right--;
+                        }
+                    }
+                }
+
+                return result; // Return the list of triplets
             }
             catch (Exception)
             {
                 throw;
             }
         }
-
+        /* Self Reflection :
+         * This C# method finds unique triplets in an array that sum to zero by first sorting the array and then applying a two-pointer approach. The sorting helps avoid duplicates, and the two-pointers efficiently find the necessary pairs for each element.
+        Time Complexity: O(n^2) due to iterating through the array and using two-pointers for each element.  
+        Space Complexity: O(1) or O(n), depending on the sorting algorithm, excluding the output storage.
+        
         /*
 
         Question 4:
@@ -221,14 +294,35 @@ namespace ISM6225_Spring_2024_Assignment_2
             try
             {
                 // Write your code here and you can modify the return value according to the requirements
-                return 0;
+                int maxConsecutiveOnes = 0; // Initialize variable to store maximum consecutive ones
+                int currentConsecutiveOnes = 0; // Initialize variable to store current consecutive ones
+
+                for(int i=0;i<nums.Length;i++) // Iterate through the array
+                {
+                    if (nums[i] == 1) // If the current element is 1
+                    {
+                        currentConsecutiveOnes++; // Increment current consecutive ones
+                        maxConsecutiveOnes = Math.Max(maxConsecutiveOnes, currentConsecutiveOnes); // Update max consecutive ones if needed
+                    }
+                    else // If the current element is 0
+                    {
+                        currentConsecutiveOnes = 0; // Reset current consecutive ones to 0
+                    }
+                }
+
+                return maxConsecutiveOnes; // Return the maximum consecutive ones
             }
             catch (Exception)
             {
                 throw;
             }
         }
-
+        /* 
+         * Self Reflection :
+         * This C# code calculates the maximum number of consecutive 1s in an array `nums`. This method uses two variables: one to keep track of the current sequence of consecutive 1s and another to record the maximum sequence found. The `Math.Max` function updates the maximum count whenever the current sequence exceeds the previous maximum.
+          Time Complexity: O(n), where n is the number of elements in the array. This is due to a single pass through the array, examining each element once.
+          Space Complexity: O(1), as the space used does not scale with the input size, only utilizing a fixed number of variables.
+         * 
         /*
 
         Question 5:
@@ -256,8 +350,21 @@ namespace ISM6225_Spring_2024_Assignment_2
         {
             try
             {
-                // Write your code here and you can modify the return value according to the requirements
-                return 0;
+                int Result = 0;
+                int baseMultiplier = 1; // Represents the current power of 2
+
+                while (binary > 0)
+                {
+                    // Extract the rightmost digit of the binary number
+                    int lastDigit = binary % 10;
+                    // Update the decimal value with the product of the last digit and the current power of 2
+                    Result += lastDigit * baseMultiplier;
+
+                    binary /= 10; // Remove the processed digit 
+                    baseMultiplier *= 2; // Update the power of 2
+                }
+
+                return Result;
             }
             catch (Exception)
             {
@@ -265,6 +372,10 @@ namespace ISM6225_Spring_2024_Assignment_2
             }
         }
 
+        /* Self Reflection :
+         * This C# function converts a binary number to its decimal equivalent by iterating through each digit of the binary input, starting from the least significant bit. It multiplies each binary digit by its corresponding power of 2 and accumulates this into the result. The base multiplier is doubled at each step to reflect the increasing powers of 2 as we move leftward through the binary number.
+           Time Complexity: O(n), where n is the number of digits in the binary number, as the function iterates through each digit once.
+           Space Complexity: O(1), using a fixed amount of space for the result and base multiplier, irrespective of the input size.
         /*
 
         Question:6
@@ -294,14 +405,70 @@ namespace ISM6225_Spring_2024_Assignment_2
         {
             try
             {
-                // Write your code here and you can modify the return value according to the requirements
-                return 0;
+                // Edge case: if there are less than two elements, the maximum gap is 0.
+                if (nums.Length < 2)
+                    return 0;
+
+                int maxGap = 0; // Initialize the maximum gap to 0.
+
+                // Initialize minNum and maxNum to the first element of the array.
+                int minNum = nums[0];
+                int maxNum = nums[0];
+
+                // Find the minimum and maximum values in the array.
+                foreach (int num in nums)
+                {
+                    minNum = Math.Min(minNum, num);
+                    maxNum = Math.Max(maxNum, num);
+                }
+
+                // Calculate the optimal bucket size to minimize the number of buckets.
+                int bucketSize = Math.Max(1, (maxNum - minNum) / (nums.Length - 1));
+
+                // Calculate the number of buckets needed.
+                int numBuckets = (maxNum - minNum) / bucketSize + 1; // The "+1" in the denominator prevents division by zero for small arrays.
+
+
+                // Initialize buckets for storing minimum and maximum values of each bucket.
+                int[] minBucket = new int[numBuckets];
+                int[] maxBucket = new int[numBuckets];
+                bool[] hasValue = new bool[numBuckets]; // A flag to mark non-empty buckets.
+
+                // Distribute the numbers into buckets.
+                foreach (int num in nums)
+                {
+                    int bucketIndex = (num - minNum) / bucketSize; // Calculate the bucket index for the current number.
+
+                    // Update the minimum and maximum values for the current bucket.
+                    minBucket[bucketIndex] = hasValue[bucketIndex] ? Math.Min(minBucket[bucketIndex], num) : num;
+                    maxBucket[bucketIndex] = hasValue[bucketIndex] ? Math.Max(maxBucket[bucketIndex], num) : num;
+                    hasValue[bucketIndex] = true; // Mark the bucket as non-empty.
+                }
+
+                // Find the maximum gap by iterating through the buckets.
+                int prevMax = minNum; // Initialize prevMax to minNum for the first bucket's minimum calculation.
+                for (int i = 0; i < numBuckets; i++)
+                {
+                    if (hasValue[i]) // Only consider non-empty buckets.
+                    {
+                        // The maximum gap could be the difference between the minimum of the current bucket and the maximum of the previous bucket.
+                        maxGap = Math.Max(maxGap, minBucket[i] - prevMax);
+                        prevMax = maxBucket[i]; // Update prevMax to the maximum of the current bucket.
+                    }
+                }
+
+                return maxGap; // Return the found maximum gap.
             }
             catch (Exception)
             {
                 throw;
             }
         }
+
+        /* Self Reflection:
+         * This C# method computes the maximum gap between elements in a sorted version of the array `nums` using a bucket-sort approach. It finds the min and max values to determine bucket sizes and then distributes elements into these buckets. The maximum gap is identified by comparing the minimum of each bucket with the maximum of the preceding non-empty bucket.
+           Time Complexity: O(n), as the method involves linear passes over the input array.
+           Space Complexity: O(n), due to the storage for buckets proportional to the input array size.
 
         /*
 
@@ -334,8 +501,17 @@ namespace ISM6225_Spring_2024_Assignment_2
         {
             try
             {
-                // Write your code here and you can modify the return value according to the requirements
-                return 0;
+                Array.Sort(nums); // Sort the array in ascending order
+
+                // Traverse the array from right to left to find the largest perimeter
+                for (int i = nums.Length - 1; i >= 2; i--)
+                {
+                    // Check if the current triplet forms a valid triangle (a + b > c)
+                    if (nums[i - 2] + nums[i - 1] > nums[i])
+                        return nums[i - 2] + nums[i - 1] + nums[i]; // If yes, return the perimeter
+                }
+
+                return 0; // If no valid triangle found, return 0
             }
             catch (Exception)
             {
@@ -343,6 +519,10 @@ namespace ISM6225_Spring_2024_Assignment_2
             }
         }
 
+        /* Self Reflection :
+         * This C# code sorts the input array `nums` and iterates backwards to find the largest perimeter of a triangle that can be formed by any three elements. It checks for a valid triangle by ensuring the sum of the two smaller sides is greater than the largest side. If a valid triangle is found, it returns its perimeter; otherwise, it returns 0.
+           Time Complexity: O(n log n), due to sorting the array.
+           Space Complexity: O(1), as it operates in-place with constant extra space.
         /*
 
         Question:8
@@ -388,14 +568,23 @@ namespace ISM6225_Spring_2024_Assignment_2
         {
             try
             {
-                // Write your code here and you can modify the return value according to the requirements
-                return "";
+                while (s.Contains(part)) // Continue the loop until s contains part
+                {
+                    int index = s.IndexOf(part); // Find the index of the leftmost occurrence of part
+                    s = s.Remove(index, part.Length); // Remove part from s starting at the found index
+                }
+
+                return s; // Return the modified string after removing all occurrences of part
             }
             catch (Exception)
             {
                 throw;
             }
         }
+        /* Self Reflection :
+         * This C# function iteratively searches and excises every instance of the substring `part` from `s`, continuing until `part` no longer appears in `s`. It locates the initial appearance of `part` in `s`, then employs the `Remove` method to discard this occurrence, repeating the procedure until `s` no longer contains `part`.
+           Time Complexity: O(n*m), where n represents the length of `s` and m the count of `part` appearances in `s`, due to the iterative search and index finding.
+           Space Complexity: O(n), attributed to the creation of new strings with each removal operation, a consequence of string immutability in C#.
 
         /* Inbuilt Functions - Don't Change the below functions */
         static string ConvertIListToNestedList(IList<IList<int>> input)
